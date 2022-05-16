@@ -1,0 +1,7 @@
+{
+  "name": "calendar-test",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
