@@ -1,6 +1,4 @@
 import {
-  IonButton,
-  IonButtons,
   IonCol,
   IonContent,
   IonDatetime,
@@ -10,66 +8,23 @@ import {
   IonItem,
   IonLabel,
   IonList,
+  IonModal,
   IonPage,
   IonRow,
   IonTitle,
   IonToolbar,
-  useIonModal,
 } from "@ionic/react";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import "./Home.css";
 
-interface CalendarProps {
-  value: string;
-  onDismiss: (opts?: { date: string }) => void;
-}
-
-const Calendar: React.FC<CalendarProps> = ({ value, onDismiss }) => {
-  const datetimeRef = useRef(null);
-  const [date, setDate] = useState<string>(new Date(Date.now()).toISOString());
-
-  const confirm = () => {
-    if (datetimeRef) {
-      console.log(`On confirm ${date}`);
-      onDismiss();
-    }
-  };
-
-  return (
-    <IonContent>
-      <IonDatetime
-        ref={datetimeRef}
-        value={date}
-        onIonChange={(e) => {
-          console.log(`onIonChange`, e);
-          setDate(e.detail.value!);
-        }}
-        max="2040-12-31"
-        presentation="month-year"
-      >
-        <IonButtons slot="buttons">
-          <IonButton onClick={() => confirm()} color="primary">
-            Cancel
-          </IonButton>
-          <IonButton onClick={() => confirm()} color="primary">
-            Done
-          </IonButton>
-        </IonButtons>
-      </IonDatetime>
-    </IonContent>
-  );
-};
-
 const Home: React.FC = () => {
-  const [value, setValue] = useState<string>("2025-06-30T11:59:59Z");
-  const [present, dismiss] = useIonModal(Calendar, {
-    value,
-    onDismiss: (opts?: { date: string }) => dismiss(),
-  });
+  const [date, setDate] = useState<string>("2020-03-30T11:59:59Z");
 
   const formatDateInput = (str: string): string => {
     const date = new Date(str);
-    return `${String(date.getMonth()).padStart(2, "0")}/${date.getFullYear()}`;
+    return `${(date.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}/${date.getFullYear()}`;
   };
 
   return (
@@ -92,9 +47,20 @@ const Home: React.FC = () => {
                 <IonItem lines="none">
                   <IonLabel position="stacked">Exp. Date</IonLabel>
                   <IonInput
-                    value={formatDateInput(value)}
-                    onClick={() => present()}
+                    id="trigger-datetime"
+                    value={formatDateInput(date)}
                   />
+                  <IonModal trigger="trigger-datetime">
+                    <IonContent>
+                      <IonDatetime
+                        max="2040-12-31"
+                        value={date}
+                        presentation="month-year"
+                        onIonChange={(e) => setDate(e.detail.value!)}
+                        showDefaultButtons={true}
+                      />
+                    </IonContent>
+                  </IonModal>
                 </IonItem>
               </IonCol>
               <IonCol size="3">
